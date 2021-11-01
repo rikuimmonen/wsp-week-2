@@ -2,11 +2,11 @@
 
 const express = require('express');
 const router = express.Router();
-const {cat_list_get, cat_get} = require("../controllers/catController");
+const {user_list_get, user_get} = require("../controllers/userController");
 
-router.get('/', cat_list_get);
+router.get('/', user_list_get);
 
-router.get('/:id', cat_get);
+router.get('/:id', user_get);
 
 router.post('/', (req, res) => {
     res.send('With this endpoint you can add cats.')

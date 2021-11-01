@@ -18,9 +18,8 @@ const cats = [
     },
 ];
 
-// TODO tee funktio, joka palauttaa yhden kissan id:n perusteella
 const getCat = (id) => {
-    return 'the cat';
+    return cats.find((cat) => cat.id === id);
 };
 
 module.exports = {
