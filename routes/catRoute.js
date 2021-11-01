@@ -9,7 +9,7 @@ const {cat_list_get, cat_get, cat_post} = require(
 
 router.get('/', cat_list_get);
 router.get('/:id', cat_get);
-router.post('/', cat_post);
+router.post('/', upload.single('cat'), cat_post);
 
 router.put('/', (req, res) => {
   res.send('With this endpoint you can edit cats.');
