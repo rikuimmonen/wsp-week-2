@@ -8,7 +8,9 @@ const {cat_list_get, cat_get, cat_post} = require(
     '../controllers/catController');
 
 router.get('/', cat_list_get);
+
 router.get('/:id', cat_get);
+
 router.post('/', upload.single('cat'), cat_post);
 
 router.put('/', (req, res) => {
