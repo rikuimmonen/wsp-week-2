@@ -4,7 +4,8 @@ const {httpError} = require('../utils/errors');
 
 const getAllUsers = async (next) => {
   try {
-    const [rows] = await promisePool.execute('SELECT * FROM wop_user');
+    const [rows] = await promisePool.execute(
+        'SELECT user_id, name, email, role FROM wop_user');
     return rows;
   } catch (e) {
     console.error('getAllUsers error', e.message);
@@ -15,7 +16,8 @@ const getAllUsers = async (next) => {
 const getUser = async (id, next) => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT * FROM wop_user WHERE user_id = ?', [id]);
+        'SELECT user_id, name, email, role FROM wop_user WHERE user_id = ?',
+        [id]);
     return rows;
   } catch (e) {
     console.error('getUser error', e.message);
@@ -23,7 +25,20 @@ const getUser = async (id, next) => {
   }
 };
 
+const addUser = async (name, email, password, next) => {
+  try {
+    const [rows] = await promisePool.execute(
+        'INSERT INTO wop_user (name, email, password) VALUES (?, ?, ?)',
+        [name, email, password]);
+    return rows;
+  } catch (e) {
+    console.error('addUser error', e.message);
+    next(httpError('Database error', 500));
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUser,
+  addUser,
 };

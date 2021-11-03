@@ -1,8 +1,7 @@
 'use strict';
 
-const userModel = require('../models/userModel');
+const {getAllUsers, getUser, addUser} = require('../models/userModel');
 const {httpError} = require('../utils/errors');
-const {getAllUsers, getUser} = userModel;
 
 const user_list_get = async (req, res, next) => {
   try {
@@ -14,7 +13,7 @@ const user_list_get = async (req, res, next) => {
     }
   } catch (e) {
     console.log('user_list_get error', e.message);
-    next(httpError('internal server error', 500));
+    next(httpError('Internal server error', 500));
   }
 };
 
@@ -28,13 +27,26 @@ const user_get = async (req, res, next) => {
     }
   } catch (e) {
     console.log('user_get error', e.message);
-    next(httpError('internal server error', 500));
+    next(httpError('Internal server error', 500));
   }
 };
 
-const user_post = (req, res) => {
-  console.log(req.body);
-  res.send('With this endpoint you can add users.');
+const user_post = async (req, res, next) => {
+  try {
+    const {name, email, passwd} = req.body;
+    const result = await addUser(name, email, passwd, next);
+    if (result.affectedRows > 0) {
+      res.json({
+        message: 'user added',
+        user_id: result.insertId,
+      });
+    } else {
+      next(httpError('No user inserted', 400));
+    }
+  } catch (e) {
+    console.log('user_post error', e.message);
+    next(httpError('Internal server error', 500));
+  }
 };
 
 module.exports = {

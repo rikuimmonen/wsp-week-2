@@ -6,8 +6,8 @@ const {httpError} = require('../utils/errors');
 
 const getAllCats = async (next) => {
   try {
-    // TODO: do the LEFT (or INNER) JOIN to get owner's name as ownername (from wop_user table).
-    const [rows] = await promisePool.execute('SELECT * FROM wop_cat');
+    const [rows] = await promisePool.execute(
+        'SELECT wop_cat.*, wop_user.name AS ownername FROM wop_cat LEFT JOIN wop_user ON owner = user_id');
     return rows;
   } catch (e) {
     console.error('getAllCats error', e.message);
@@ -18,19 +18,14 @@ const getAllCats = async (next) => {
 const getCat = async (id, next) => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT * FROM wop_cat WHERE cat_id = ?', [id]);
+        'SELECT wop_cat.*, wop_user.name AS ownername FROM wop_cat LEFT JOIN wop_user ON owner = user_id WHERE cat_id = ?',
+        [id]);
     return rows;
   } catch (e) {
     console.error('getCat error', e.message);
     next(httpError('Database error', 500));
   }
 };
-
-/*
-const getCat = (id) => {
-  return cats.find((cat) => cat.id === id);
-};
-*/
 
 module.exports = {
   getAllCats,
