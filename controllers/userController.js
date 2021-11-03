@@ -1,22 +1,35 @@
 'use strict';
 
 const userModel = require('../models/userModel');
+const {httpError} = require('../utils/errors');
+const {getAllUsers, getUser} = userModel;
 
-//const cats = catModel.cats; ->
-const {users, getUser} = userModel;
-
-const user_list_get = (req, res) => {
-  const UsersSansPasswords = users.map((user) => {
-    delete user.password;
-    return user;
-  });
-  res.json(UsersSansPasswords);
+const user_list_get = async (req, res, next) => {
+  try {
+    const users = await getAllUsers(next);
+    if (users.length > 0) {
+      res.json(users);
+    } else {
+      next(httpError('No users found', 404));
+    }
+  } catch (e) {
+    console.log('user_list_get error', e.message);
+    next(httpError('internal server error', 500));
+  }
 };
 
-const user_get = (req, res) => {
-  const response = getUser(req.params.id);
-  delete response.password;
-  res.json(response);
+const user_get = async (req, res, next) => {
+  try {
+    const user = await getUser(req.params.id, next);
+    if (user.length > 0) {
+      res.json(user.pop());
+    } else {
+      next(httpError('No user found', 404));
+    }
+  } catch (e) {
+    console.log('user_get error', e.message);
+    next(httpError('internal server error', 500));
+  }
 };
 
 const user_post = (req, res) => {
