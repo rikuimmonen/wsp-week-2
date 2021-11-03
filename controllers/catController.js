@@ -3,15 +3,16 @@
 const catModel = require('../models/catModel');
 
 //const cats = catModel.cats; ->
-const {cats, getCat} = catModel;
+const {getAllCats, getCat} = catModel;
 
-const cat_list_get = (req, res) => {
+const cat_list_get = async (req, res) => {
+  const cats = await getAllCats();
   res.json(cats);
 };
 
-const cat_get = (req, res) => {
-  const vastaus = getCat(req.params.id);
-  res.json(vastaus);
+const cat_get = async (req, res) => {
+  const cat = await getCat(req.params.id);
+  res.json(cat);
 };
 
 const cat_post = (req, res) => {
