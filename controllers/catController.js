@@ -1,8 +1,7 @@
 'use strict';
 
-const catModel = require('../models/catModel');
+const {getAllCats, getCat, addCat} = require('../models/catModel');
 const {httpError} = require('../utils/errors');
-const {getAllCats, getCat} = catModel;
 
 const cat_list_get = async (req, res, next) => {
   try {
@@ -32,9 +31,23 @@ const cat_get = async (req, res, next) => {
   }
 };
 
-const cat_post = (req, res) => {
-  console.log(req.body, req.file);
-  res.send('With this endpoint you can add cats.');
+const cat_post = async (req, res, next) => {
+  try {
+    const {name, birthdate, weight, owner} = req.body;
+    const cat = req.file.filename;
+    const result = await addCat(name, weight, owner, cat, birthdate, next);
+    if (result.affectedRows > 0) {
+      res.json({
+        message: 'cat added',
+        cat_id: result.insertId,
+      });
+    } else {
+      next(httpError('No cat inserted', 400));
+    }
+  } catch (e) {
+    console.log('cat_post error', e.message);
+    next(httpError('Internal server error', 500));
+  }
 };
 
 module.exports = {
