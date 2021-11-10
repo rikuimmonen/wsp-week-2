@@ -10,7 +10,7 @@ router.get('/', user_list_get);
 router.get('/:id', user_get);
 router.post(
     '/',
-    body('name').isLength({min: 3}),
+    body('name').isLength({min: 3}).escape(),
     body('email').isEmail(),
     body('passwd').matches('(?=.*[a-zA-Z]).{8,}'),
     user_post,

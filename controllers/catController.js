@@ -42,6 +42,12 @@ const cat_post = async (req, res, next) => {
     return;
   }
 
+  if (!req.file) {
+    const err = httpError('file not valid', 400);
+    next(err);
+    return;
+  }
+
   try {
     const {name, birthdate, weight, owner} = req.body;
     const cat = req.file.filename;
