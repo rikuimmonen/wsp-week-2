@@ -2,6 +2,7 @@
 
 const {getAllUsers, getUser, addUser} = require('../models/userModel');
 const {httpError} = require('../utils/errors');
+const {validationResult} = require('express-validator');
 
 const user_list_get = async (req, res, next) => {
   try {
@@ -32,6 +33,14 @@ const user_get = async (req, res, next) => {
 };
 
 const user_post = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log('user_post validation', errors.array());
+    next(httpError('invalid data', 400));
+    return;
+  }
+
   try {
     const {name, email, passwd} = req.body;
     const result = await addUser(name, email, passwd, next);

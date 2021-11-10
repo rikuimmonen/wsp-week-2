@@ -1,7 +1,9 @@
 'use strict';
 
-const {getAllCats, getCat, addCat, modifyCat, deleteCat} = require('../models/catModel');
+const {getAllCats, getCat, addCat, modifyCat, deleteCat} = require(
+    '../models/catModel');
 const {httpError} = require('../utils/errors');
+const {validationResult} = require('express-validator');
 
 const cat_list_get = async (req, res, next) => {
   try {
@@ -32,6 +34,14 @@ const cat_get = async (req, res, next) => {
 };
 
 const cat_post = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log('cat_post validation', errors.array());
+    next(httpError('invalid data', 400));
+    return;
+  }
+
   try {
     const {name, birthdate, weight, owner} = req.body;
     const cat = req.file.filename;
@@ -90,5 +100,5 @@ module.exports = {
   cat_get,
   cat_post,
   cat_put,
-  cat_delete
+  cat_delete,
 };
