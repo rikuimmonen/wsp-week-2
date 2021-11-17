@@ -39,11 +39,17 @@ const addCat = async (name, weight, owner, filename, birthdate, next) => {
   }
 };
 
-const modifyCat = async (id, name, weight, owner, birthdate, next) => {
+const modifyCat = async (id, name, weight, owner, role, birthdate, next) => {
+  let sql = 'UPDATE wop_cat SET name = ?, weight = ?, birthdate = ? WHERE cat_id = ? AND owner = ?';
+  let params = [name, weight, birthdate, id, owner];
+
+  if (role === 0) {
+    sql = 'UPDATE wop_cat SET name = ?, weight = ?, birthdate = ?, owner = ? WHERE cat_id = ?';
+    params = [name, weight, birthdate, owner, id];
+  }
+
   try {
-    const [rows] = await promisePool.execute(
-        'UPDATE wop_cat SET name = ?, weight = ?, birthdate = ? WHERE cat_id = ? AND owner = ?',
-        [name, weight, birthdate, id, owner]);
+    const [rows] = await promisePool.execute(sql, params);
     return rows;
   } catch (e) {
     console.error('editCat error', e.message);
@@ -51,11 +57,17 @@ const modifyCat = async (id, name, weight, owner, birthdate, next) => {
   }
 };
 
-const deleteCat = async (id, owner, next) => {
+const deleteCat = async (id, owner, role, next) => {
+  let sql = 'DELETE FROM wop_cat WHERE cat_id = ? AND owner = ?';
+  let params = [id, owner];
+
+  if (role === 0) {
+    sql = 'DELETE FROM wop_cat WHERE cat_id = ?';
+    params = [id];
+  }
+
   try {
-    const [rows] = await promisePool.execute(
-        'DELETE FROM wop_cat WHERE cat_id = ? AND owner = ?',
-        [id, owner]);
+    const [rows] = await promisePool.execute(sql, params);
     return rows;
   } catch (e) {
     console.error('deleteCat error', e.message);

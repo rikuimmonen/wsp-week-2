@@ -20,7 +20,7 @@ const login = (req, res, next) => {
 
       delete user.password;
 
-      const token = jwt.sign(user, 'f!Q2&Wrv&0lixqJBPnn0');
+      const token = jwt.sign(user, process.env.JWT_SECRET);
       return res.json({user, token});
     });
   })(req, res, next);

@@ -51,7 +51,8 @@ const cat_post = async (req, res, next) => {
   try {
     const {name, birthdate, weight} = req.body;
     const cat = req.file.filename;
-    const result = await addCat(name, weight, req.user.user_id, cat, birthdate, next);
+    const result = await addCat(name, weight, req.user.user_id, cat, birthdate,
+        next);
     if (result.affectedRows > 0) {
       res.json({
         message: 'cat added',
@@ -69,7 +70,14 @@ const cat_post = async (req, res, next) => {
 const cat_put = async (req, res, next) => {
   try {
     const {name, birthdate, weight} = req.body;
-    const result = await modifyCat(req.params.id, name, weight, req.user.user_id, birthdate, next);
+    let owner = req.user.user_id;
+
+    if (req.user.role === 0) {
+      owner = req.body.owner;
+    }
+
+    const result = await modifyCat(req.params.id, name, weight,
+        owner, req.user.role, birthdate, next);
     if (result.affectedRows > 0) {
       res.json({
         message: 'cat edited',
@@ -86,7 +94,8 @@ const cat_put = async (req, res, next) => {
 
 const cat_delete = async (req, res, next) => {
   try {
-    const result = await deleteCat(req.params.id, req.user.user_id, next);
+    const result = await deleteCat(req.params.id, req.user.user_id,
+        req.user.role, next);
     if (result.affectedRows > 0) {
       res.json({
         message: 'cat deleted',
