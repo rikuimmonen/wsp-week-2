@@ -42,8 +42,8 @@ const addCat = async (name, weight, owner, filename, birthdate, next) => {
 const modifyCat = async (id, name, weight, owner, birthdate, next) => {
   try {
     const [rows] = await promisePool.execute(
-        'UPDATE wop_cat SET name = ?, weight = ?, owner = ?, birthdate = ? WHERE cat_id = ?',
-        [name, weight, owner, birthdate, id]);
+        'UPDATE wop_cat SET name = ?, weight = ?, birthdate = ? WHERE cat_id = ? AND owner = ?',
+        [name, weight, birthdate, id, owner]);
     return rows;
   } catch (e) {
     console.error('editCat error', e.message);
@@ -51,11 +51,11 @@ const modifyCat = async (id, name, weight, owner, birthdate, next) => {
   }
 };
 
-const deleteCat = async (id, next) => {
+const deleteCat = async (id, owner, next) => {
   try {
     const [rows] = await promisePool.execute(
-        'DELETE FROM wop_cat WHERE cat_id = ?',
-        [id]);
+        'DELETE FROM wop_cat WHERE cat_id = ? AND owner = ?',
+        [id, owner]);
     return rows;
   } catch (e) {
     console.error('deleteCat error', e.message);

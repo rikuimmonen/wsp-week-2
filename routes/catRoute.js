@@ -15,16 +15,15 @@ const {body} = require('express-validator');
 
 router.route('/').
     get(cat_list_get).
-    put(cat_put).
     post(upload.single('cat'),
         body('name').not().isEmpty().escape(),
         body('birthdate').isDate(),
         body('weight').isNumeric(),
-        body('owner').isNumeric(),
         cat_post,
     );
 
 router.route('/:id').
+    put(cat_put).
     get(cat_get).
     delete(cat_delete);
 
