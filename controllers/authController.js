@@ -1,9 +1,11 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const bcrypt = require('bcryptjs');
 const {httpError} = require('../utils/errors');
 const {validationResult} = require('express-validator');
 const {addUser} = require('../models/userModel');
+const salt = bcrypt.genSaltSync(12);
 
 const login = (req, res, next) => {
   passport.authenticate('local', {session: false}, (err, user, info) => {
@@ -39,7 +41,8 @@ const user_post = async (req, res, next) => {
 
   try {
     const {name, email, passwd} = req.body;
-    const result = await addUser(name, email, passwd, next);
+    const hash = bcrypt.hashSync(passwd, salt);
+    const result = await addUser(name, email, hash, next);
     if (result.affectedRows > 0) {
       res.json({
         message: 'user added',

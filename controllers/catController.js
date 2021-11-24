@@ -4,6 +4,8 @@ const {getAllCats, getCat, addCat, modifyCat, deleteCat} = require(
     '../models/catModel');
 const {httpError} = require('../utils/errors');
 const {validationResult} = require('express-validator');
+const {makeThumbnail} = require('../utils/resize');
+const {getCoordinates} = require('../utils/imageMeta');
 
 const cat_list_get = async (req, res, next) => {
   try {
@@ -49,15 +51,27 @@ const cat_post = async (req, res, next) => {
   }
 
   try {
-    const {name, birthdate, weight} = req.body;
+    req.body.coords = await getCoordinates(req.file.path);
+  } catch (e) {
+    req.body.coords = [10.00, 10.00];
+  }
+
+  try {
+    const thumbnail = await makeThumbnail(
+        req.file.path,
+        './thumbnails/' + req.file.filename,
+    );
+    const {name, birthdate, weight, coords} = req.body;
     const cat = req.file.filename;
     const result = await addCat(name, weight, req.user.user_id, cat, birthdate,
-        next);
-    if (result.affectedRows > 0) {
-      res.json({
-        message: 'cat added',
-        cat_id: result.insertId,
-      });
+        JSON.stringify(coords), next);
+    if (thumbnail) {
+      if (result.affectedRows > 0) {
+        res.json({
+          message: 'cat added',
+          cat_id: result.insertId,
+        });
+      }
     } else {
       next(httpError('No cat inserted', 400));
     }
